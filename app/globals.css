@@ -1,0 +1,957 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #e7e1d3;
+  --color-ink: #111110;
+  --color-file: #b31217;
+  --color-phosphor: #7cff6b;
+  --color-fog: #8c8c86;
+
+  --font-display: var(--font-anton), "Arial Narrow", Impact, sans-serif;
+  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "Cascadia Mono", Menlo, monospace;
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .07  0 0 0 0 .07  0 0 0 0 .06  1.5 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --worn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2.4 0 0 0 1.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --focus: var(--color-phosphor);
+}
+
+@layer base {
+html {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-mono);
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  scrollbar-color: var(--color-fog) var(--color-ink);
+}
+
+html.is-locked,
+html.is-locked body {
+  overflow: hidden;
+}
+
+body {
+  min-height: 100svh;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-file);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+
+button {
+  cursor: pointer;
+}
+
+}
+
+@layer components {
+/* ---------- Superficies: la pantalla y el papel se tocan ---------- */
+
+.surface-screen {
+  position: relative;
+  --focus: var(--color-phosphor);
+}
+
+.surface-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.3) 2px 3px);
+  animation: tube 5.5s steps(1) infinite;
+}
+
+.surface-screen > * {
+  position: relative;
+  z-index: 3;
+}
+
+.surface-paper {
+  position: relative;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  --focus: var(--color-file);
+}
+
+.surface-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--grain);
+  opacity: 0.5;
+  animation: grain 1.4s steps(4) infinite;
+}
+
+.surface-paper > * {
+  position: relative;
+}
+
+.surface-dark {
+  --focus: var(--color-paper);
+}
+
+@keyframes tube {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  47% {
+    opacity: 0.86;
+  }
+  49% {
+    opacity: 1;
+  }
+  83% {
+    opacity: 0.92;
+  }
+  84% {
+    opacity: 1;
+  }
+}
+
+@keyframes grain {
+  0% {
+    background-position: 0 0;
+  }
+  25% {
+    background-position: -37px 21px;
+  }
+  50% {
+    background-position: 19px -43px;
+  }
+  75% {
+    background-position: -11px -17px;
+  }
+}
+
+/* ---------- Tipografía de sistema ---------- */
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.012em;
+  line-height: 0.9;
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+.link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 200ms var(--ease-expo), color 200ms var(--ease-expo);
+}
+
+.link:hover {
+  text-decoration-thickness: 2px;
+}
+
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---------- Canvas ---------- */
+
+.telescreen-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100lvh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- 00 · Calibración ---------- */
+
+.calibration {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--color-ink);
+  overflow: hidden;
+}
+
+.cal-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-ink);
+  transform-origin: 50% 50%;
+  animation: crt-on 900ms var(--ease-expo) both;
+}
+
+.cal-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: var(--color-paper);
+  opacity: 0;
+  pointer-events: none;
+  animation: crt-flash 900ms linear both;
+}
+
+@keyframes crt-on {
+  0% {
+    transform: scale(0.2, 0.003);
+  }
+  35% {
+    transform: scale(1, 0.003);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes crt-flash {
+  0%,
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.cal-step {
+  animation: cal-in 500ms var(--ease-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes cal-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.calibration.is-skipped .cal-inner,
+.calibration.is-skipped .cal-flash,
+.calibration.is-skipped .cal-step {
+  animation-duration: 1ms;
+  animation-delay: 0ms;
+}
+
+.seal-ring {
+  will-change: transform;
+  animation: seal-turn 90s linear infinite;
+}
+
+@keyframes seal-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.boot-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75em;
+}
+
+.boot-line .leader {
+  flex: 1;
+  min-width: 1.5rem;
+  border-bottom: 1px dotted currentColor;
+  opacity: 0.45;
+  transform: translateY(-0.25em);
+}
+
+.power-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  width: 100%;
+  padding: 1.1em 1.2em;
+  border: 1px solid var(--color-phosphor);
+  color: var(--color-phosphor);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: left;
+  transition: background-color 200ms var(--ease-expo), color 200ms var(--ease-expo);
+}
+
+.power-btn::before {
+  content: "";
+  width: 0.7em;
+  height: 0.7em;
+  background: currentColor;
+  animation: blink 1.1s steps(1) infinite;
+}
+
+.power-btn:hover,
+.power-btn:focus-visible {
+  background: var(--color-phosphor);
+  color: var(--color-ink);
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- 01 · El Hermano Mayor ---------- */
+
+.bb-headline {
+  font-size: min(17.4vw, 13.5svh);
+}
+
+@media (min-width: 768px) {
+  .bb-headline {
+    font-size: min(10.6vw, 25svh);
+  }
+}
+
+.bb-mask {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: top;
+  padding-top: 0.06em;
+}
+
+.bb-letter {
+  display: inline-block;
+  will-change: transform;
+}
+
+.bb-band {
+  display: inline-block;
+  background: var(--color-file);
+  color: var(--color-paper);
+  padding: 0.03em 0.1em 0;
+  margin-left: -0.1em;
+}
+
+.you-mark {
+  position: absolute;
+  transform: translate(14px, -50%);
+  white-space: nowrap;
+}
+
+.you-mark::before {
+  content: "";
+  position: absolute;
+  right: calc(100% + 4px);
+  top: 50%;
+  width: 6px;
+  height: 1px;
+  background: currentColor;
+}
+
+/* ---------- 02 · El diario ---------- */
+
+.sheet {
+  position: relative;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  --focus: var(--color-file);
+}
+
+.sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--grain);
+  opacity: 0.55;
+}
+
+.sheet > * {
+  position: relative;
+}
+
+.sheet-holes {
+  position: absolute;
+  left: clamp(0.6rem, 2vw, 1.4rem);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  pointer-events: none;
+}
+
+.sheet-holes i {
+  display: block;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: var(--color-ink);
+}
+
+.diary-input {
+  display: block;
+  width: 100%;
+  resize: none;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: clamp(1.125rem, 2.3vw, 1.9rem);
+  line-height: 1.7;
+  color: var(--color-ink);
+  caret-color: var(--color-file);
+  background-image: linear-gradient(to bottom, transparent calc(1.7em - 1px), rgb(17 17 16 / 0.22) calc(1.7em - 1px));
+  background-size: 100% 1.7em;
+}
+
+.diary-input::placeholder {
+  color: rgb(17 17 16 / 0.6);
+}
+
+.diary-input:focus-visible {
+  outline: 0;
+}
+
+.diary-input:focus {
+  background-image: linear-gradient(to bottom, transparent calc(1.7em - 2px), var(--color-file) calc(1.7em - 2px));
+}
+
+.diary-input:read-only {
+  background-image: linear-gradient(to bottom, transparent calc(1.7em - 1px), rgb(17 17 16 / 0.22) calc(1.7em - 1px));
+}
+
+.stamp {
+  display: inline-block;
+  padding: 0.28em 0.5em 0.2em;
+  border: 0.14em solid var(--color-file);
+  outline: 0.05em solid var(--color-file);
+  outline-offset: 0.1em;
+  color: var(--color-file);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-mask-image: var(--worn);
+  mask-image: var(--worn);
+}
+
+.plain-btn {
+  padding: 0.7em 1em;
+  border: 1px solid currentColor;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background-color 200ms var(--ease-expo), color 200ms var(--ease-expo);
+}
+
+.on-ink .plain-btn:hover {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.on-paper .plain-btn:hover {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.plain-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ---------- 03 · Doblepiensa ---------- */
+
+.doublethink {
+  transition: none;
+}
+
+.doublethink[data-truth="b"] {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  --focus: var(--color-paper);
+}
+
+.doublethink[data-truth="b"]::before {
+  opacity: 0;
+}
+
+.truth-wipe {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: var(--color-file);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+.truth-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 1em;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.truth-track {
+  position: relative;
+  width: 4.5rem;
+  height: 2rem;
+  border: 1px solid currentColor;
+}
+
+.truth-knob {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  background: currentColor;
+  transition: transform 400ms var(--ease-expo);
+}
+
+.truth-switch[aria-checked="true"] .truth-knob {
+  transform: translateX(100%);
+}
+
+.rewrite {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.rewrite.is-struck::after {
+  content: "";
+  position: absolute;
+  left: -0.04em;
+  right: -0.04em;
+  top: 52%;
+  height: 0.09em;
+  min-height: 2px;
+  background: var(--color-file);
+  transform-origin: 0 50%;
+  animation: strike 260ms var(--ease-expo) both;
+}
+
+@keyframes strike {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.hole-word {
+  display: inline-block;
+  border-bottom: 2px dashed var(--color-file);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  line-height: 1.1;
+}
+
+.hole-word:active {
+  cursor: grabbing;
+}
+
+.hole-word:hover {
+  border-bottom-style: solid;
+}
+
+.on-ink .hole-word {
+  border-bottom-color: currentColor;
+}
+
+.memory-hole {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  outline: 1px solid currentColor;
+  outline-offset: 5px;
+  transition: outline-offset 200ms var(--ease-expo);
+}
+
+.memory-hole.is-armed {
+  outline-offset: 10px;
+  outline-color: var(--color-file);
+}
+
+.memory-hole .flame {
+  position: absolute;
+  inset: 0;
+  background: var(--color-file);
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+}
+
+.sentence-in {
+  animation: typed 700ms steps(28) backwards;
+}
+
+@keyframes typed {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+}
+
+.ticker-track {
+  display: inline-block;
+  padding-block: 0.7em;
+  animation: ticker 26s linear infinite;
+}
+
+.ticker.is-hot {
+  background: var(--color-file);
+  color: var(--color-paper);
+  border-color: var(--color-file);
+}
+
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---------- 04 · Habitación 101 ---------- */
+
+.room {
+  background: #000;
+}
+
+.room-light {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(120vw, 62rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background-image: radial-gradient(circle, var(--color-paper) 1px, transparent 1.7px);
+  background-size: 9px 9px;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, rgb(0 0 0 / 0.5) 26%, transparent 62%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 0%, rgb(0 0 0 / 0.5) 26%, transparent 62%);
+  opacity: 0.2;
+  animation: breathe 7s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.13;
+  }
+}
+
+.room-input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgb(231 225 211 / 0.5);
+  padding: 0.5em 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  color: var(--color-paper);
+  caret-color: var(--color-paper);
+  border-radius: 0;
+}
+
+.room-input:focus-visible {
+  outline: 0;
+  border-bottom-color: var(--color-paper);
+  border-bottom-width: 2px;
+}
+
+/* ---------- 05 · El archivo ---------- */
+
+.report-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.2rem 1.5rem;
+  padding-block: 0.85rem;
+  border-top: 1px solid rgb(124 255 107 / 0.28);
+}
+
+@media (min-width: 768px) {
+  .report-row {
+    grid-template-columns: 15rem 1fr;
+  }
+}
+
+.report-row dt {
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-fog);
+  padding-top: 0.2em;
+}
+
+.deviation-bar {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 3px;
+  height: 1.1rem;
+  max-width: 26rem;
+}
+
+.deviation-bar i {
+  border: 1px solid currentColor;
+}
+
+.deviation-bar i.on {
+  background: currentColor;
+}
+
+.print-file {
+  display: none;
+}
+
+/* ---------- Interfaz fija ---------- */
+
+.hud {
+  position: fixed;
+  z-index: 40;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  --focus: var(--color-phosphor);
+}
+
+.whisper {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(1rem, 4svh, 2.5rem);
+  z-index: 45;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 2rem);
+  padding: 0.75em 1.1em;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border: 1px solid var(--color-paper);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  pointer-events: none;
+  animation: whisper-in 400ms var(--ease-expo) both;
+}
+
+@keyframes whisper-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 0.6em);
+  }
+}
+
+.cursor-eye {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 70;
+  width: 34px;
+  height: 22px;
+  margin: -11px 0 0 -17px;
+  border: 1.5px solid var(--color-paper);
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  opacity: 0;
+  transition: opacity 400ms linear;
+}
+
+.cursor-eye.is-on {
+  opacity: 1;
+}
+
+.cursor-eye i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--color-paper);
+}
+
+.cursor-eye.is-blinking {
+  height: 3px;
+  margin-top: -1.5px;
+}
+
+.cursor-eye.is-blinking i {
+  opacity: 0;
+}
+
+}
+
+/* Mientras el aparato calibra, nada de lo que hay detrás se anima. */
+main[inert] *,
+main[inert] *::before,
+main[inert] *::after {
+  animation-play-state: paused !important;
+}
+
+/* ---------- Movimiento reducido: solo fundidos ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ticker-track {
+    animation: none !important;
+  }
+
+  [data-reveal] {
+    transform: none;
+  }
+
+  .cursor-eye {
+    display: none;
+  }
+}
+
+/* ---------- Impresión: el expediente censurado ---------- */
+
+@media print {
+  @page {
+    margin: 18mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    overflow: visible !important;
+  }
+
+  main,
+  .calibration,
+  .telescreen-canvas,
+  .hud,
+  .whisper,
+  .cursor-eye,
+  .skip-link {
+    display: none !important;
+  }
+
+  .print-file {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10.5pt;
+    line-height: 1.5;
+    color: #000;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-file h1 {
+    font-family: var(--font-display);
+    font-size: 30pt;
+    line-height: 1;
+    text-transform: uppercase;
+    margin: 4mm 0 8mm;
+  }
+
+  .print-file .print-row {
+    display: grid;
+    grid-template-columns: 52mm 1fr;
+    gap: 4mm;
+    padding: 2.5mm 0;
+    border-top: 0.3mm solid #000;
+    break-inside: avoid;
+  }
+
+  .print-file .print-row dt {
+    font-size: 8pt;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .print-file .censor {
+    background: #000;
+    color: #000;
+    padding: 0 0.3em;
+    border-radius: 0;
+  }
+
+  .print-file .stamp {
+    font-size: 22pt;
+    transform: rotate(-7deg);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .print-file svg {
+    display: block;
+    width: 96mm;
+  }
+
+  .print-file svg circle {
+    fill: #000;
+  }
+}

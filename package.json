@@ -1,0 +1,36 @@
+{
+  "name": "telescreen",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TELESCREEN — una experiencia web inmersiva basada en 1984. La web es el telescreen.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "node scripts/qa/server.mjs",
+    "typecheck": "tsc --noEmit",
+    "qa:keys": "node scripts/qa/keys.mjs",
+    "qa:shots": "node scripts/qa/shots.mjs",
+    "qa:fps": "node scripts/qa/og-fps.mjs && node scripts/qa/fps-throttle.mjs",
+    "qa:video": "node scripts/qa/video.mjs"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^9.8.2",
+    "gsap": "^3.15.1",
+    "lenis": "^1.3.27",
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "three": "0.182.0",
+    "zustand": "^5.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "0.182.0",
+    "playwright-core": "^1.65.0",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^7.0.2"
+  }
+}
